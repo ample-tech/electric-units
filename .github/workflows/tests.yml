@@ -1,0 +1,20 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.x
+        architecture: x64
+
+    - name: Run Tests
+      run: |
+        python setup.py test
