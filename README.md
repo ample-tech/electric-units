@@ -1,6 +1,8 @@
-# Electric Units
+# Electric Units for python
 
 Python objects to ease the handling of data around electricity systems and grids.
+
+![Electric Units for python](/extras/retrowave-logo.jpg)
 
 ## Installation
 
@@ -35,4 +37,4 @@ pass and that the code is lint free.
 
 ## Usage
 
-TODO
+See the post on [kyso.io for some basic usage instructions](https://kyso.io/ample/electric-units).
