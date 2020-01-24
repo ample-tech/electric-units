@@ -9,7 +9,7 @@ with open(path.join(REPO_DIR, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='electric_units',
-    version='1.0.1',
+    version='1.0.2',
     description='For handling units of measurement in electricity grid data.',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
