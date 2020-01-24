@@ -1,0 +1,10 @@
+title: "Using the electric-units package"
+description: "How to make use of the objects in the electric-units package for managing data about the electricity grid and appliances."
+branch: master
+main: extras/usage_notebook/usage.ipynb
+email: tom@ample.tech
+tags:
+  - electric-units
+  - data-transformation
+  - energy
+  - power
