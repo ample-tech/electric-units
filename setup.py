@@ -32,14 +32,10 @@ setup(
     tests_require=['pytest', 'pylint'],
     install_requires=[
         'attrs',
+        'numpy',
+        'pandas>0.25',
         'python-dateutil',
         'pytz',
         'requests',
-    ],
-    extras_require={
-        'pandas': [
-            'numpy',
-            'pandas>0.25',
-        ]
-    }
+    ]
 )
