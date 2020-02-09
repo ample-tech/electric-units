@@ -44,13 +44,13 @@ class NemDispatchPeriod(BaseSettlementPeriod):
     def _period_id(self):
         """An integer representing the dispatch period in the day.
         Ranges from 1 to 288, and resets to 1 at 4:00AM AEST"""
-        hour = self.start.hour if self.start.hour < 4 else (self.start_hour - 4)
+        if self.start.hour < 4:
+            hour = self.start.hour + 20 # 20 hours from 4:00 to midnight
+        else:
+            hour = self.start_hour - 4
         minute = self.start.minute
 
         period_id = (12 * hour) + int(minute / 5) + 1
-
-        if self.start.hour < 4:
-            period_id += 20 * 12  # 20 hours from 4:00 to midnight
 
         return period_id
 
