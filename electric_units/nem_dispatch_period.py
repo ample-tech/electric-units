@@ -56,9 +56,9 @@ class NemDispatchPeriod(BaseSettlementPeriod):
 
     @property
     def dispatch_interval(self):
-        """A string representing the unique dispatch interval.
-        Takes the form of a zero-padded date string with a period ID at the end
-        Resets at 4:00AM AEST"""
+        """String representing the unique interval, DISPATCHINTERVAL in the 
+        NEM data. Takes the form of a zero-padded date string with a 
+        period ID at the end. Each day starts at 4:00AM AEST"""
         start = self.start
         start_date = start.date()
 
