@@ -31,7 +31,7 @@ class NemDispatchPeriod(BaseSettlementPeriod):
 
     @property
     def start(self):
-        """Rewind to the start of the half hour."""
+        """Rewind to the start of the 5-minute period."""
         moment = self.tz_match(self.moment)
 
         delta_to_start = timedelta(minutes=moment.minute % 5,
