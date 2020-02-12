@@ -1,6 +1,7 @@
 """Test the WattSample object."""
 
 from datetime import datetime
+from decimal import Decimal
 from pytz import timezone
 import pytest
 
@@ -18,6 +19,9 @@ def test_can_create():
     sample_period = power_sample.settlement_period(NemSettlementPeriod)
     period = NemSettlementPeriod(moment=sample_time)
     assert sample_period == period
+
+    decimal_power_sample = WattSample(watts=Decimal(1000), moment=sample_time)
+    assert decimal_power_sample == power_sample
 
 
 def test_can_create_from_string():
