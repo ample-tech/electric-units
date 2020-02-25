@@ -2,6 +2,7 @@
 
 from collections import defaultdict
 from statistics import mean
+from math import nan
 from attr import attrs, attrib
 
 from electric_units.utils.datetime_coercion import datetime_coercion
@@ -69,6 +70,8 @@ class ElectricalEnergy:
 
             period_energy = self.from_power_samples(p_samples)
             energy_groups.append(period_energy)
+
+        energy_groups = _add_nan_to_energy_groups(energy_groups, period_class)
 
         return energy_groups
 
@@ -138,6 +141,26 @@ def _average_kwh(power_samples):
         kwh += (watts / 1000) * (duration / 3600)
 
     return kwh
+
+
+def _add_nan_to_energy_groups(energy_groups, period_class):
+    """Checks if the distance between objects is greater than or equal to the
+    length of the period. If so, it adds energy groups with a nan kwh value"""
+    sorted_energy = sorted(energy_groups, key=lambda k: k.start)
+
+    for energy_1, energy_2 in zip(sorted_energy[:-1], sorted_energy[1:]):
+        distance_between = energy_2.start - energy_1.end
+        length_period = energy_1.end - energy_1.start
+
+        if distance_between >= length_period:
+            nan_energy = ElectricalEnergy(kwh=nan, 
+                                          start=energy_1.end, 
+                                          end=energy_1.start)
+            sorted_energy += nan_energy.by_period(period_class)
+
+    sorted_energy = sorted(sorted_energy, key=lambda k: k.start)
+
+    return sorted_energy
 
 
 class TooFewSamples(IndexError):
