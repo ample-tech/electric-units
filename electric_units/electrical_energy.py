@@ -11,7 +11,7 @@ from electric_units.utils.datetime_coercion import datetime_coercion
 class ElectricalEnergy:
     """Energy used within a period of time."""
 
-    kwh = attrib(type=float)
+    kwh = attrib(type=float, converter=float)
     start = attrib(converter=datetime_coercion)
     end = attrib(converter=datetime_coercion)
     samples = attrib(type=list, eq=False, repr=False, default=None)

@@ -13,7 +13,7 @@ class WattSample:
     drawn at a specific moment in time.
     """
 
-    watts = attrib(type=float)
+    watts = attrib(type=float, converter=float)
     moment = attrib(converter=datetime_coercion)
 
     def settlement_period(self, period_class):
