@@ -69,9 +69,14 @@ class ElectricalEnergy:
                 p_samples.append(end_extra)
 
             period_energy = self.from_power_samples(p_samples)
-            energy_groups.append(period_energy)
 
-        energy_groups = _add_nan_to_energy_groups(energy_groups, period_class)
+            if energy_groups:
+                last_energy = energy_groups[-1]
+                nan_energy = _check_nan_needed(period_energy, last_energy)
+                if nan_energy:
+                    energy_groups.append(nan_energy)
+
+            energy_groups.append(period_energy)
 
         return energy_groups
 
@@ -143,24 +148,18 @@ def _average_kwh(power_samples):
     return kwh
 
 
-def _add_nan_to_energy_groups(energy_groups, period_class):
-    """Checks if the distance between objects is greater than or equal to the
-    length of the period. If so, it adds energy groups with a nan kwh value"""
-    sorted_energy = sorted(energy_groups, key=lambda k: k.start)
+def _check_nan_needed(period_energy, last_period_energy):
+    length_period = period_energy.end - period_energy.start
+    distance_to_last = period_energy.start - last_period_energy.end
 
-    for energy_1, energy_2 in zip(sorted_energy[:-1], sorted_energy[1:]):
-        distance_between = energy_2.start - energy_1.end
-        length_period = energy_1.end - energy_1.start
+    if distance_to_last >= length_period:
+        nan_energy = ElectricalEnergy(kwh=nan,
+                                      start=last_period_energy.end,
+                                      end=period_energy.start)
+    else:
+        nan_energy = None
 
-        if distance_between >= length_period:
-            nan_energy = ElectricalEnergy(kwh=nan, 
-                                          start=energy_1.end, 
-                                          end=energy_1.start)
-            sorted_energy += nan_energy.by_period(period_class)
-
-    sorted_energy = sorted(sorted_energy, key=lambda k: k.start)
-
-    return sorted_energy
+    return nan_energy
 
 
 class TooFewSamples(IndexError):
