@@ -211,21 +211,28 @@ def test_add_nan_to_energy_groups():
         WattSample(watts=5000, moment='2019-11-01T13:00:00'),
         WattSample(watts=5000, moment='2019-11-01T13:15:00'),
         # no values in period between 13:30 and 14:00
-        WattSample(watts=5000, moment='2019-11-01T14:00:00'),
-        WattSample(watts=5000, moment='2019-11-01T14:15:00')
+        WattSample(watts=5000, moment='2019-11-01T14:30:00'),
+        WattSample(watts=5000, moment='2019-11-01T14:45:00')
     ]
 
     energy = ElectricalEnergy.from_power_samples(samples)
     energy_periods = energy.by_period(NemSettlementPeriod)
 
     # check it hasn't affected calculation of other kwh
-    assert energy_periods[0].kwh == energy_periods[2].kwh == 2.5
+    assert energy_periods[0].kwh == energy_periods[3].kwh == 2.5
 
     # check properties on nan period
     time_zone = timezone("Etc/GMT-10")
     nan_period_start = datetime(2019, 11, 1, 13, 30, 0, tzinfo=time_zone)
     nan_period_end = datetime(2019, 11, 1, 14, 0, 0, tzinfo=time_zone)
 
+    nan_period_start_2 = datetime(2019, 11, 1, 14, 00, 0, tzinfo=time_zone)
+    nan_period_end_2 = datetime(2019, 11, 1, 14, 30, 0, tzinfo=time_zone)
+
     assert isnan(energy_periods[1].kwh)
     assert energy_periods[1].start == nan_period_start
     assert energy_periods[1].end == nan_period_end
+
+    assert isnan(energy_periods[2].kwh)
+    assert energy_periods[2].start == nan_period_start_2
+    assert energy_periods[2].end == nan_period_end_2
