@@ -2,6 +2,7 @@
 
 from collections import defaultdict
 from statistics import mean
+from math import nan
 from attr import attrs, attrib
 
 from electric_units.utils.datetime_coercion import datetime_coercion
@@ -68,6 +69,13 @@ class ElectricalEnergy:
                 p_samples.append(end_extra)
 
             period_energy = self.from_power_samples(p_samples)
+
+            if energy_groups:
+                last_energy = energy_groups[-1]
+                nan_energy = _check_nan_needed(period_energy, last_energy)
+                if nan_energy:
+                    energy_groups.append(nan_energy)
+
             energy_groups.append(period_energy)
 
         return energy_groups
@@ -138,6 +146,20 @@ def _average_kwh(power_samples):
         kwh += (watts / 1000) * (duration / 3600)
 
     return kwh
+
+
+def _check_nan_needed(period_energy, last_period_energy):
+    length_period = period_energy.end - period_energy.start
+    distance_to_last = period_energy.start - last_period_energy.end
+
+    if distance_to_last >= length_period:
+        nan_energy = ElectricalEnergy(kwh=nan,
+                                      start=last_period_energy.end,
+                                      end=period_energy.start)
+    else:
+        nan_energy = None
+
+    return nan_energy
 
 
 class TooFewSamples(IndexError):

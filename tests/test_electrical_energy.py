@@ -1,4 +1,7 @@
 """Test the ElectricalEnergy object."""
+from math import isnan
+from datetime import datetime
+from pytz import timezone
 import pytest
 
 from electric_units import ElectricalEnergy, NemSettlementPeriod, WattSample
@@ -199,3 +202,30 @@ def test_average_kwh():
     assert _average_kwh(samples) == 7.5 / 2
     with pytest.raises(TooFewSamples):
         _average_kwh([samples[0]])
+
+
+def test_add_nan_to_energy_groups():
+    """Test that energy groups with a kwh of nan are created
+    where there is no data in that period."""
+    samples = [
+        WattSample(watts=5000, moment='2019-11-01T13:00:00'),
+        WattSample(watts=5000, moment='2019-11-01T13:15:00'),
+        # no values in period between 13:30 and 14:00
+        WattSample(watts=5000, moment='2019-11-01T14:00:00'),
+        WattSample(watts=5000, moment='2019-11-01T14:15:00')
+    ]
+
+    energy = ElectricalEnergy.from_power_samples(samples)
+    energy_periods = energy.by_period(NemSettlementPeriod)
+
+    # check it hasn't affected calculation of other kwh
+    assert energy_periods[0].kwh == energy_periods[2].kwh == 2.5
+
+    # check properties on nan period
+    time_zone = timezone("Etc/GMT-10")
+    nan_period_start = datetime(2019, 11, 1, 13, 30, 0, tzinfo=time_zone)
+    nan_period_end = datetime(2019, 11, 1, 14, 0, 0, tzinfo=time_zone)
+
+    assert isnan(energy_periods[1].kwh)
+    assert energy_periods[1].start == nan_period_start
+    assert energy_periods[1].end == nan_period_end
