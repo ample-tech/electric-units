@@ -72,9 +72,11 @@ class ElectricalEnergy:
 
             if energy_groups:
                 last_energy = energy_groups[-1]
-                nan_energy = _check_nan_needed(period_energy, last_energy)
+                nan_energy = _check_nan_needed(period_energy,
+                                               last_energy,
+                                               period_class)
                 if nan_energy:
-                    energy_groups.append(nan_energy)
+                    energy_groups += nan_energy
 
             energy_groups.append(period_energy)
 
@@ -148,14 +150,14 @@ def _average_kwh(power_samples):
     return kwh
 
 
-def _check_nan_needed(period_energy, last_period_energy):
+def _check_nan_needed(period_energy, last_period_energy, period_class):
     length_period = period_energy.end - period_energy.start
     distance_to_last = period_energy.start - last_period_energy.end
 
     if distance_to_last >= length_period:
         nan_energy = ElectricalEnergy(kwh=nan,
                                       start=last_period_energy.end,
-                                      end=period_energy.start)
+                                      end=period_energy.start).by_period(period_class)
     else:
         nan_energy = None
 
